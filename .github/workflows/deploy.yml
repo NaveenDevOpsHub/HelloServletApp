@@ -38,9 +38,9 @@ jobs:
       - name: Deploy WAR to Tomcat
         shell: powershell
         run: |
-          Remove-Item "C:\Users\testnaveen\Tomcat\apache-tomcat-11.0.23\webapps\HelloServletApp-1.0.war" -Force -ErrorAction SilentlyContinue
-          Remove-Item "C:\Users\testnaveen\Tomcat\apache-tomcat-11.0.23\webapps\HelloServletApp-1.0" -Recurse -Force -ErrorAction SilentlyContinue
-          Copy-Item "target\HelloServletApp-1.0.war" "C:\Users\testnaveen\Tomcat\apache-tomcat-11.0.23\webapps\HelloServletApp-1.0.war"
+          Remove-Item "C:\Users\testnaveen\Tomcat\actions-runner\_work\HelloServletApp\HelloServletApp\target\HelloServletApp-1.0.war" -Force -ErrorAction SilentlyContinue
+          Remove-Item "C:\Users\testnaveen\Tomcat\actions-runner\_work\HelloServletApp\HelloServletApp\target\HelloServletApp-1.0" -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item "C:\Users\testnaveen\Tomcat\actions-runner\_work\HelloServletApp\HelloServletApp\target\HelloServletApp-1.0\target\HelloServletApp-1.0.war" "C:\Users\testnaveen\Tomcat\apache-tomcat-11.0.23\webapps\HelloServletApp-1.0.war"
 
       - name: Start Tomcat
         shell: powershell
