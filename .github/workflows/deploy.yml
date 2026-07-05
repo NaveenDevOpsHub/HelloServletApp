@@ -34,6 +34,8 @@ jobs:
         run: |
           cd "C:\Users\testnaveen\Tomcat\apache-tomcat-11.0.23\bin"
           .\shutdown.bat
+          Start-Sleep -Seconds 5
+        continue-on-error: true
 
       - name: Deploy WAR to Tomcat
         shell: powershell
