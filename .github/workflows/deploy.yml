@@ -18,8 +18,8 @@ jobs:
 
       #ARTIFACTORY_URL: naveendevopshub
       ARTIFACTORY_REPO: docker-local-HelloServletApp
-      ARTIFACTORY_USER: testnaveen95508@gmail.com
-      ARTIFACTORY_PASSWORD: Kittu$9550896913
+      ARTIFACTORY_USER: naveendevopshub
+      ARTIFACTORY_PASSWORD: BAIOWVEgEkQzqTushnRFFb5zt69YovVcSIXvTW6WD8RN6P4ptVMEJQQJ99CGAC77bzfEqg7NAAACAZCRNJEa
 
     steps:
       - name: Checkout Code
