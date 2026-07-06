@@ -18,8 +18,8 @@ jobs:
 
       #ARTIFACTORY_URL: naveendevopshub.azurecr.io
       ARTIFACTORY_REPO: docker-local-HelloServletApp
-      ARTIFACTORY_USER: naveendevopshub
-      ARTIFACTORY_PASSWORD: BAIOWVEgEkQzqTushnRFFb5zt69YovVcSIXvTW6WD8RN6P4ptVMEJQQJ99CGAC77bzfEqg7NAAACAZCRNJEa
+      ARTIFACTORY_USER: hemanth@testnaveen95508gmail.onmicrosoft.com
+      ARTIFACTORY_PASSWORD: Fogu4767
 
     steps:
       - name: Checkout Code
