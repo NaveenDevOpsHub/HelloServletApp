@@ -16,7 +16,7 @@ jobs:
       DOCKER_IMAGE: naveen-hello-servlet
       DOCKER_TAG: latest
 
-      ARTIFACTORY_URL: https://hub.docker.com/repositories/naveendevopshub
+      ARTIFACTORY_URL: naveendevopshub
       ARTIFACTORY_REPO: naveendevopshub/helloservletapp
       ARTIFACTORY_USER: naveendevopshub
       ARTIFACTORY_PASSWORD: Kittu$9550896913
