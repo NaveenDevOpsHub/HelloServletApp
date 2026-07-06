@@ -38,7 +38,7 @@ jobs:
       - name: Login to Artifactory Docker Registry
         shell: powershell
         run: |
-          echo $env:ARTIFACTORY_PASSWORD | docker login naveendevopshub.azurecr.io `
+          echo $env:ARTIFACTORY_PASSWORD | docker login naveendevopshub.azurecr.io 
             -u $env:ARTIFACTORY_USER --password-stdin
 
       - name: Tag Docker Image for Artifactory
