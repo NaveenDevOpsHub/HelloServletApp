@@ -1,4 +1,4 @@
-name: Build & Deploy to Tomcat (Windows Self-Hosted)
+name: Build & Push Docker Image to Artifactory
 
 on:
   push:
@@ -6,57 +6,51 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-dockerize:
     runs-on: [self-hosted, windows]
 
     env:
-      JAVA_HOME: 'C:\Program Files\Java\jdk-25.0.3'
       MAVEN_HOME: 'C:\Users\testnaveen\Tomcat\apache-maven-3.9.16'
-      TOMCAT_HOME: 'C:\Users\testnaveen\Tomcat\apache-tomcat-11.0.23'
+      JAVA_HOME: 'C:\Program Files\Java\jdk-25.0.3'
+
+      DOCKER_IMAGE: naveen-hello-servlet
+      DOCKER_TAG: latest
+
+      ARTIFACTORY_URL: naveendevopshub.azurecr.io
+      ARTIFACTORY_REPO: docker-local-HelloServletApp
+      ARTIFACTORY_USER: naveendevopshub
+      ARTIFACTORY_PASSWORD: BAIOWVEgEkQzqTushnRFFb5zt69YovVcSIXvTW6WD8RN6P4ptVMEJQQJ99CGAC77bzfEqg7NAAACAZCRNJEa
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set PATH (Java + Maven)
+      - name: Build WAR using Maven
         shell: powershell
-        run: |
-          echo "Updating PATH..."
-          $env:PATH = "$env:JAVA_HOME\bin;$env:MAVEN_HOME\bin;$env:PATH"
-          echo "JAVA_HOME=$env:JAVA_HOME"
-          echo "MAVEN_HOME=$env:MAVEN_HOME"
-
-      - name: Build Maven Project
-        shell: powershell
-        working-directory: ${{ github.workspace }}
         run: |
           & "$env:MAVEN_HOME\bin\mvn.cmd" clean package -DskipTests
 
-      - name: Stop Tomcat Server
+      - name: Build Docker Image
         shell: powershell
         run: |
-          Write-Host "Stopping Tomcat..."
-          & "$env:TOMCAT_HOME\bin\shutdown.bat"
-          Start-Sleep -Seconds 10
+          docker build -t $env:DOCKER_IMAGE:$env:DOCKER_TAG .
 
-      - name: Deploy WAR to Tomcat
+      - name: Login to Artifactory Docker Registry
         shell: powershell
         run: |
-          Write-Host "Deploying WAR file..."
+          echo $env:ARTIFACTORY_PASSWORD | docker login $env:ARTIFACTORY_URL `
+            -u $env:ARTIFACTORY_USER --password-stdin
 
-          $warSource = Get-ChildItem -Path "${{ github.workspace }}\target" -Filter "*.war" | Select-Object -First 1
-
-          if ($warSource -eq $null) {
-            throw "WAR file not found in target folder!"
-          }
-
-          Copy-Item $warSource.FullName -Destination "$env:TOMCAT_HOME\webapps\" -Force
-
-      - name: Start Tomcat Server
+      - name: Tag Docker Image for Artifactory
         shell: powershell
         run: |
-          Write-Host "Starting Tomcat..."
-          & "$env:TOMCAT_HOME\bin\startup.bat"
+          docker tag $env:DOCKER_IMAGE:$env:DOCKER_TAG `
+          $env:ARTIFACTORY_URL/$env:ARTIFACTORY_REPO/$env:DOCKER_IMAGE:$env:DOCKER_TAG
 
-      - name: Deployment Success
-        run: echo "Application deployed successfully!"
+      - name: Push Docker Image
+        shell: powershell
+        run: |
+          docker push $env:ARTIFACTORY_URL/$env:ARTIFACTORY_REPO/$env:DOCKER_IMAGE:$env:DOCKER_TAG
+
+      - name: Deployment Info
+        run: echo "Image pushed to Artifactory successfully!"
