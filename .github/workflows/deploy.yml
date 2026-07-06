@@ -18,8 +18,8 @@ jobs:
 
       #ARTIFACTORY_URL: naveendevopshub
       ARTIFACTORY_REPO: docker-local-HelloServletApp
-      ARTIFACTORY_USER: hemanth@testnaveen95508gmail.onmicrosoft.com
-      ARTIFACTORY_PASSWORD: Fogu4767
+      ARTIFACTORY_USER: naveendevopshub
+      ARTIFACTORY_PASSWORD: BAIOWVEgEkQzqTushnRFFb5zt69YovVcSIXvTW6WD8RN6P4ptVMEJQQJ99CGAC77bzfEqg7NAAACAZCRNJEa
 
     steps:
       - name: Checkout Code
@@ -38,7 +38,7 @@ jobs:
       - name: Login to Artifactory Docker Registry
         shell: powershell
         run: |
-          echo $env:ARTIFACTORY_PASSWORD | docker login naveendevopshub `
+          echo $env:ARTIFACTORY_PASSWORD | docker login naveendevopshub.azurecr.io `
             -u $env:ARTIFACTORY_USER --password-stdin
 
       - name: Tag Docker Image for Artifactory
