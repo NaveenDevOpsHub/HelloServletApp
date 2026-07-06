@@ -1,4 +1,4 @@
-name: Build & Push Docker Image to ACR
+name: Build & Push Docker Image to Artifactory
 
 on:
   push:
@@ -16,10 +16,10 @@ jobs:
       DOCKER_IMAGE: naveen-hello-servlet
       DOCKER_TAG: latest
 
-      ACR_URL: naveendevopshub.azurecr.io
-      ACR_REPO: docker-local-helloservletapp
-      ACR_USER: ${{ secrets.ACR_USER }}
-      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+      ARTIFACTORY_URL: https://hub.docker.com/repositories/naveendevopshub
+      ARTIFACTORY_REPO: naveendevopshub/helloservletapp
+      ARTIFACTORY_USER: naveendevopshub
+      ARTIFACTORY_PASSWORD: Kittu$9550896913
 
     steps:
       - name: Checkout Code
@@ -30,35 +30,27 @@ jobs:
         run: |
           & "$env:MAVEN_HOME\bin\mvn.cmd" clean package -DskipTests
 
-      - name: Verify Dockerfile and WAR
-        shell: powershell
-        run: |
-          dir
-          dir target
-          if (!(Test-Path ".\Dockerfile")) { throw "Dockerfile not found in repo root" }
-          if (!(Get-ChildItem ".\target\*.war")) { throw "WAR file not found in target folder" }
-
       - name: Build Docker Image
         shell: powershell
         run: |
           docker build -t $env:DOCKER_IMAGE:$env:DOCKER_TAG .
 
-      - name: Login to Azure Container Registry
+      - name: Login to Artifactory Docker Registry
         shell: powershell
         run: |
-          $env:ACR_PASSWORD | docker login $env:ACR_URL -u $env:ACR_USER --password-stdin
+          echo $env:ARTIFACTORY_PASSWORD | docker login $env:ARTIFACTORY_URL `
+            -u $env:ARTIFACTORY_USER --password-stdin
 
-      - name: Tag Docker Image for ACR
+      - name: Tag Docker Image for Artifactory
         shell: powershell
         run: |
-          docker tag $env:DOCKER_IMAGE:$env:DOCKER_TAG "$env:ACR_URL/$env:ACR_REPO/$env:DOCKER_IMAGE:$env:DOCKER_TAG"
+          docker tag $env:DOCKER_IMAGE:$env:DOCKER_TAG `
+          $env:ARTIFACTORY_URL/$env:ARTIFACTORY_REPO/$env:DOCKER_IMAGE:$env:DOCKER_TAG
 
-      - name: Push Docker Image to ACR
+      - name: Push Docker Image
         shell: powershell
         run: |
-          docker push "$env:ACR_URL/$env:ACR_REPO/$env:DOCKER_IMAGE:$env:DOCKER_TAG"
+          docker push $env:ARTIFACTORY_URL/$env:ARTIFACTORY_REPO/$env:DOCKER_IMAGE:$env:DOCKER_TAG
 
       - name: Deployment Info
-        shell: powershell
-        run: |
-          echo "Image pushed successfully to $env:ACR_URL/$env:ACR_REPO/$env:DOCKER_IMAGE:$env:DOCKER_TAG"
+        run: echo "Image pushed to Artifactory successfully!"
