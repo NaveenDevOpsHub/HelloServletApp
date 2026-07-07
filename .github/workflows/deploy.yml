@@ -17,8 +17,8 @@ jobs:
       IMAGE_NAME: hello-servlet-app
       IMAGE_TAG: latest
 
-      ACR_USER: naveendevopshub
-      ACR_PASSWORD: AJZIgmwypUZFarDVFVbg46JEoENLeH3LbJ6kUrZf6rT314JVEZjQJQQJ99CGAC77bzfEqg7NAAACAZCRSnNL
+      ACR_USER: hemanth@testnaveen95508gmail.onmicrosoft.com
+      ACR_PASSWORD: Bittu$7702841722
 
     steps:
       - name: Checkout Code
