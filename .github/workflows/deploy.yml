@@ -14,7 +14,7 @@ jobs:
       JAVA_HOME: 'C:\Program Files\Java\jdk-25.0.3'
 
       ACR_URL: naveendevopshub
-      IMAGE_NAME: hello-servlet-app
+      IMAGE_NAME: naveen
       IMAGE_TAG: latest
 
       ACR_USER: naveendevopshub
