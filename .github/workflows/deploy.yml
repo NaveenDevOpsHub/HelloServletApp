@@ -70,7 +70,10 @@ jobs:
       - name: Login to Azure Container Registry
         shell: powershell
         run: |
-          $env:ACR_PASSWORD | docker login naveendevopshub.azurecr.io --username $env:ACR_USER --password-stdin
+          docker logout naveendevopshub.azurecr.io
+          $password = "${{ secrets.ACR_PASSWORD }}"
+          $username = "${{ secrets.ACR_USER }}"
+          $password | docker login naveendevopshub.azurecr.io --username $username --password-stdin
 
       - name: Tag Docker Image for ACR
         shell: powershell
