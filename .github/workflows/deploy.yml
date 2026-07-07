@@ -1,4 +1,4 @@
-name: Build and Push Docker Image to ACR
+name: Build WAR, Docker Image and Push to Azure ACR
 
 on:
   push:
@@ -6,47 +6,71 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build-and-push-acr:
     runs-on: [self-hosted, windows]
 
     env:
-      MAVEN_HOME: 'C:\Users\testnaveen\Tomcat\apache-maven-3.9.16'
       JAVA_HOME: 'C:\Program Files\Java\jdk-25.0.3'
+      MAVEN_HOME: 'C:\Users\testnaveen\Tomcat\apache-maven-3.9.16'
 
       ACR_URL: naveendevopshub.azurecr.io
-      IMAGE_NAME: naveen
+      IMAGE_NAME: hello-servlet-app
       IMAGE_TAG: latest
 
-      ACR_USER: naveendevopshub
-      ACR_PASSWORD: CtsUq5ZvQp5bF64MZS9LLe2YODqY3P7kRa9dCUMY6bXcXNut7xxTJQQJ99CGAC77bzfEqg7NAAACAZCR6Yww
+      ACR_USER: ${{ secrets.ACR_USER }}
+      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set Java and Maven PATH
+        shell: powershell
+        run: |
+          $env:PATH = "$env:JAVA_HOME\bin;$env:MAVEN_HOME\bin;$env:PATH"
+          java -version
+          & "$env:MAVEN_HOME\bin\mvn.cmd" -version
+
       - name: Build WAR using Maven
         shell: powershell
+        working-directory: ${{ github.workspace }}
         run: |
           & "$env:MAVEN_HOME\bin\mvn.cmd" clean package -DskipTests
 
-      - name: Verify Files
+      - name: Verify Dockerfile and WAR
         shell: powershell
+        working-directory: ${{ github.workspace }}
         run: |
+          Write-Host "Current workspace:"
+          pwd
+
+          Write-Host "Project files:"
           dir
+
+          Write-Host "Target folder:"
           dir target
-          if (!(Test-Path ".\Dockerfile")) { throw "Dockerfile not found" }
-          if (!(Get-ChildItem ".\target\*.war")) { throw "WAR file not found" }
+
+          if (!(Test-Path ".\Dockerfile")) {
+            throw "Dockerfile not found in project root"
+          }
+
+          $warFile = Get-ChildItem ".\target\*.war" | Select-Object -First 1
+          if ($null -eq $warFile) {
+            throw "WAR file not found in target folder"
+          }
+
+          Write-Host "WAR found: $($warFile.FullName)"
 
       - name: Build Docker Image
         shell: powershell
+        working-directory: ${{ github.workspace }}
         run: |
           docker build -t "$env:IMAGE_NAME:$env:IMAGE_TAG" .
 
       - name: Login to Azure Container Registry
         shell: powershell
         run: |
-          $env:ACR_PASSWORD | docker login $env:ACR_URL `
-          -u $env:ACR_USER --password-stdin
+          $env:ACR_PASSWORD | docker login $env:ACR_URL -u $env:ACR_USER --password-stdin
 
       - name: Tag Docker Image for ACR
         shell: powershell
@@ -58,7 +82,13 @@ jobs:
         run: |
           docker push "$env:ACR_URL/$env:IMAGE_NAME:$env:IMAGE_TAG"
 
-      - name: Success Message
+      - name: Logout from ACR
         shell: powershell
         run: |
-          echo "Image pushed to $env:ACR_URL/$env:IMAGE_NAME:$env:IMAGE_TAG"
+          docker logout $env:ACR_URL
+
+      - name: Success
+        shell: powershell
+        run: |
+          Write-Host "Docker image pushed successfully:"
+          Write-Host "$env:ACR_URL/$env:IMAGE_NAME:$env:IMAGE_TAG"
