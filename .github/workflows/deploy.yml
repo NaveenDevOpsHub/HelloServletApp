@@ -17,8 +17,8 @@ jobs:
       IMAGE_NAME: hello-servlet-app
       IMAGE_TAG: latest
 
-      ACR_USER: ${{ secrets.ACR_USER }}
-      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+      ACR_USER: naveendevopshub
+      ACR_PASSWORD: AJZIgmwypUZFarDVFVbg46JEoENLeH3LbJ6kUrZf6rT314JVEZjQJQQJ99CGAC77bzfEqg7NAAACAZCRSnNL
 
     steps:
       - name: Checkout Code
